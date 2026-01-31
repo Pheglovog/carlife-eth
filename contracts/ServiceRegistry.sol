@@ -2,12 +2,15 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title ServiceRegistry
  * @dev 服务注册合约 - 完整版
  */
 contract ServiceRegistry is Ownable {
+    using Counters for Counters.Counter;
+
     // 服务类型
     enum ServiceType {
         MAINTENANCE,  // 维修
@@ -17,6 +20,10 @@ contract ServiceRegistry is Ownable {
         PARKING,      // 停车
         RENTAL        // 租赁
     }
+
+    // 计数器
+    Counters.Counter private _providerIdCounter;
+    Counters.Counter private _serviceIdCounter;
 
     // 服务商
     struct ServiceProvider {
