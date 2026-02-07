@@ -1,0 +1,21 @@
+{
+  "name": "carlife",
+  "version": "1.0.0",
+  "description": "CarLife - 汽车生活平台 NFT",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy:goerli": "npx hardhat run scripts/deploy.js --network goerli",
+    "verify:sepolia": "npx hardhat verify --network sepolia",
+    "node": "npx hardhat node"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
+}
