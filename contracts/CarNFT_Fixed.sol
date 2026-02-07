@@ -81,6 +81,11 @@ contract CarNFT_Fixed is ERC721, ERC721URIStorage, Ownable, Pausable {
 
     // ====== Pausable 功能 ======
 
+    // 查询铸造状态
+    function mintingPaused() public view returns (bool) {
+        return _mintingPaused;
+    }
+
     function pauseMinting() public onlyOwner {
         _mintingPaused = true;
         emit MintingPaused(msg.sender);
@@ -89,6 +94,15 @@ contract CarNFT_Fixed is ERC721, ERC721URIStorage, Ownable, Pausable {
     function unpauseMinting() public onlyOwner {
         _mintingPaused = false;
         emit MintingUnpaused(msg.sender);
+    }
+
+    // 覆盖 Pausable 的 pause/unpause 函数（OpenZeppelin 5.x）
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
     }
 
     // ====== Minting 功能 ======
@@ -204,6 +218,6 @@ contract CarNFT_Fixed is ERC721, ERC721URIStorage, Ownable, Pausable {
     }
 
     function isCustomAuthorized(address account) public view returns (bool) {
-        return _customAuthorized[account];
+        return account == owner() || _customAuthorized[account];
     }
 }
