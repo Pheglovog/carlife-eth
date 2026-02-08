@@ -6,14 +6,23 @@
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
-    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
-    "deploy:goerli": "npx hardhat run scripts/deploy.js --network goerli",
-    "verify:sepolia": "npx hardhat verify --network sepolia",
-    "node": "npx hardhat node"
+    "test:coverage": "npx hardhat coverage",
+    "deploy:sepolia": "npx hardhat run scripts/deploy-all.js --network sepolia",
+    "deploy:mainnet": "npx hardhat run scripts/deploy-all.js --network mainnet",
+    "verify": "npx hardhat run scripts/verify.js",
+    "node": "npx hardhat node",
+    "lint": "eslint \"scripts/**/*.js\" && solhint \"contracts/**/*.sol\"",
+    "lint:fix": "eslint \"scripts/**/*.js\" --fix && solhint \"contracts/**/*.sol\" --fix",
+    "clean": "npx hardhat clean"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "hardhat": "^2.19.0"
+    "hardhat": "^2.19.0",
+    "eslint": "^8.50.0",
+    "solidity-coverage": "^0.8.5",
+    "solhint": "^3.6.2",
+    "@nomicfoundation/hardhat-gas-reporter": "^1.0.9",
+    "dotenv": "^16.3.1"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0"

@@ -1,4 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-gas-reporter");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -13,6 +15,9 @@ module.exports = {
   },
   paths: {
     sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts"
   },
   networks: {
     sepolia: {
@@ -20,10 +25,13 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111
     },
-    goerli: {
-      url: process.env.GOERLI_RPC_URL || "https://rpc.ankr.com/eth_goerli",
+    mainnet: {
+      url: process.env.MAINNET_RPC_URL || process.env.ALCHEMY_API_KEY ? `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}` : "",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 5
+      chainId: 1
+    },
+    hardhat: {
+      chainId: 31337
     }
   },
   etherscan: {
@@ -31,5 +39,17 @@ module.exports = {
       sepolia: process.env.ETHERSCAN_API_KEY || "",
       mainnet: process.env.ETHERSCAN_API_KEY || ""
     }
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS === "true",
+    currency: "USD",
+    gasPrice: parseInt(process.env.GAS_PRICE || "20", 10) * 1e9, // Convert Gwei to Wei
+    showTimeSpent: true,
+    showMethodSig: true,
+    token: "ETH",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY
+  },
+  mocha: {
+    timeout: 40000
   }
 };
