@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.23;
 
 /**
- * @title CarNFT_Fixed
+ * @title CarNFTFixed
  * @author Pheglovog
  * @notice 修复版 CarNFT，兼容 OpenZeppelin 5.x
  */
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
-contract CarNFT_Fixed is ERC721, ERC721URIStorage, Ownable, Pausable {
+contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
 
     // ====== 状态变量 ======
 
