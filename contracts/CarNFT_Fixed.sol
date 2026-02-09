@@ -7,12 +7,26 @@ pragma solidity ^0.8.23;
  * @notice 修复版 CarNFT，兼容 OpenZeppelin 5.x
  */
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import {
+    ERC721
+} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {
+    ERC721URIStorage
+} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {
+    Ownable
+} from "@openzeppelin/contracts/access/Ownable.sol";
+import {
+    Pausable
+} from "@openzeppelin/contracts/utils/Pausable.sol";
 
 contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
+
+    // ====== 自定义错误 ======
+
+    error MintingIsPaused();
+    error NotAuthorized();
+    error TokenDoesNotExist();
 
     // ====== 状态变量 ======
 
@@ -63,12 +77,12 @@ contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
     // ====== 修饰器 ======
 
     modifier whenNotPausedMinting() {
-        require(!_mintingPaused, "Minting is paused");
+        if (_mintingPaused) revert MintingIsPaused();
         _;
     }
 
     modifier onlyCustomAuthorized() {
-        require(msg.sender == owner() || _customAuthorized[msg.sender], "Not authorized");
+        if (msg.sender != owner() && !_customAuthorized[msg.sender]) revert NotAuthorized();
         _;
     }
 
@@ -140,7 +154,7 @@ contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
     // ====== 查询功能 ======
 
     function getCarInfo(uint256 tokenId) public view returns (CarInfo memory) {
-        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        if (_ownerOf(tokenId) == address(0)) revert TokenDoesNotExist();
         return _carInfos[tokenId];
     }
 
@@ -155,7 +169,7 @@ contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
         uint256 mileage,
         string memory condition
     ) public onlyCustomAuthorized {
-        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        if (_ownerOf(tokenId) == address(0)) revert TokenDoesNotExist();
 
         _carInfos[tokenId].mileage = mileage;
         _carInfos[tokenId].condition = condition;
@@ -168,7 +182,7 @@ contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
         uint256 mileage,
         string memory notes
     ) public onlyCustomAuthorized {
-        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        if (_ownerOf(tokenId) == address(0)) revert TokenDoesNotExist();
 
         _carInfos[tokenId].mileage = mileage;
         _carInfos[tokenId].lastServiceDate = block.timestamp;

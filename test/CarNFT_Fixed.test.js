@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("CarNFT_Fixed", function () {
+describe("CarNFTFixed", function () {
   let carNFT;
   let owner;
   let addr1;
@@ -19,8 +19,8 @@ describe("CarNFT_Fixed", function () {
   beforeEach(async function () {
     [owner, addr1, addr2, provider] = await ethers.getSigners();
 
-    const CarNFT_Fixed = await ethers.getContractFactory("CarNFT_Fixed");
-    carNFT = await CarNFT_Fixed.deploy();
+    const CarNFTFixed = await ethers.getContractFactory("CarNFTFixed");
+    carNFT = await CarNFTFixed.deploy();
     await carNFT.waitForDeployment();
   });
 
@@ -115,7 +115,7 @@ describe("CarNFT_Fixed", function () {
           CONDITION,
           URI
         )
-      ).to.be.revertedWith("Minting is paused");
+      ).to.be.revertedWithCustomError(carNFT, "MintingIsPaused");
     });
 
     it("应该设置正确的车辆信息", async function () {
@@ -278,7 +278,7 @@ describe("CarNFT_Fixed", function () {
     it("非授权账户不能更新车辆信息", async function () {
       await expect(
         carNFT.connect(addr1).updateCarInfo(0, 60000, "excellent")
-      ).to.be.revertedWith("Not authorized");
+      ).to.be.revertedWithCustomError(carNFT, "NotAuthorized");
     });
 
     it("应该正确触发 CarInfoUpdated 事件", async function () {
@@ -334,7 +334,7 @@ describe("CarNFT_Fixed", function () {
     it("非授权账户不能添加维护记录", async function () {
       await expect(
         carNFT.connect(addr1).addMaintenance(0, 60000, "Oil change")
-      ).to.be.revertedWith("Not authorized");
+      ).to.be.revertedWithCustomError(carNFT, "NotAuthorized");
     });
 
     it("应该正确触发 MaintenanceAdded 事件", async function () {
@@ -361,7 +361,7 @@ describe("CarNFT_Fixed", function () {
 
   describe("查询不存在的 Token", function () {
     it("查询不存在的 token 应该 revert", async function () {
-      await expect(carNFT.getCarInfo(999)).to.be.revertedWith("Token does not exist");
+      await expect(carNFT.getCarInfo(999)).to.be.revertedWithCustomError(carNFT, "TokenDoesNotExist");
     });
   });
 
