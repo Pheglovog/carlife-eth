@@ -60,3 +60,7 @@ coverage.json
 
 # Backup files
 backup/
+
+# Security scan reports
+output/
+*.slither.json
