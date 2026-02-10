@@ -26,9 +26,9 @@
 ## 🛠️ 技术栈
 
 ### 区块链
-- **Solidity ^0.8.19** - 智能合约
-- **OpenZeppelin** - ERC721、Ownable、Counters
-- **Hardhat** - 开发框架
+- **Solidity ^0.8.23** - 智能合约
+- **OpenZeppelin 5.x** - ERC721、Ownable、Pausable
+- **Hardhat 2.22.5** - 开发框架
 - **Ethers.js** - 区块链交互
 
 ### 后端
@@ -48,47 +48,106 @@
 ```
 CarLife/
 ├── contracts/           # 智能合约
-│   ├── CarNFT.sol         # 车辆 NFT
-│   ├── ServiceRegistry.sol  # 服务注册
-│   ├── DataToken.sol        # 数据 Token
-│   └── CarLife.sol         # 主合约
+│   └── CarNFT_Fixed.sol   # 修复版 CarNFT（主合约）
 │
-├── backend/              # 后端（Python 示例 + Go 框架）
-│   ├── api.py              # FastAPI 示例
-│   ├── models/             # 数据模型
-│   ├── services/           # 业务逻辑
-│   └── main.go             # Go 入口
+├── test/                 # 测试
+│   └── CarNFT_Fixed.test.js  # 完整测试套件（31 测试）
 │
-├── frontend/             # 前端（开发中）
-│   ├── index.html          # 入口
-│   └── src/
-│       ├── components/      # 组件
-│       ├── views/          # 页面
-│       └── router/          # 路由
+├── scripts/              # 部署脚本
+│   ├── deploy.js            # 部署脚本
+│   ├── deploy-all.js        # 批量部署
+│   ├── verify.js            # 合约验证
+│   └── check-balance.js     # 余额检查
 │
-└── docs/                # 文档
-    ├── CONTRACTS.md       # 智能合约说明
-    └── API.md             # API 文档
+├── backup/               # 备份合约（历史版本）
+│   ├── CarLife.sol
+│   ├── CarNFT.sol
+│   ├── CarNFT_Optimized.sol
+│   ├── CarNFT_Optimized_v2.sol
+│   ├── DataToken.sol
+│   └── ServiceRegistry.sol
+│
+├── backend/              # 后端（Python 示例）
+│   └── api.py              # FastAPI 示例
+│
+├── frontend/             # 前端（简单演示）
+│   └── index.html          # 入口
+│
+├── reports/              # 报告
+│   └── slither-report.md  # Slither 安全扫描报告
+│
+├── .github/              # GitHub Actions
+│   └── workflows/
+│       └── security-scan.yml  # 自动安全扫描
+│
+├── .solhint.json         # Solidity 代码规范配置
+├── .eslintrc.json        # JavaScript 代码规范配置
+├── hardhat.config.js     # Hardhat 配置
+└── package.json          # 项目依赖
 ```
 
 ## 🚀 快速开始
 
-### 1. 智能合约开发
+### 1. 安装依赖
 
 ```bash
-cd contracts
-
-# 安装依赖
+# 安装 Node.js 依赖
 npm install
 
-# 编译
-npx hardhat compile
-
-# 部署到测试网络
-npx hardhat run scripts/deploy.js --network localhost
+# 或使用 yarn
+yarn install
 ```
 
-### 2. 后端 API（Python 示例）
+### 2. 编译智能合约
+
+```bash
+# 编译合约
+npx hardhat compile
+
+# 清理编译产物
+npx hardhat clean
+```
+
+### 3. 运行测试
+
+```bash
+# 运行所有测试
+npx hardhat test
+
+# 运行特定测试
+npx hardhat test test/CarNFT_Fixed.test.js
+
+# 测试覆盖率
+npx hardhat coverage
+```
+
+### 4. 代码质量检查
+
+```bash
+# Solhint 代码规范检查
+npx solhint 'contracts/**/*.sol'
+
+# ESLint JavaScript 检查
+npx eslint '**/*.js'
+
+# 安全扫描
+npx slither contracts/CarNFT_Fixed.sol
+```
+
+### 5. 部署到测试网络
+
+```bash
+# 启动本地节点
+npx hardhat node
+
+# 部署合约
+npx hardhat run scripts/deploy.js --network localhost
+
+# 验证合约
+npx hardhat run scripts/verify.js --network sepolia
+```
+
+### 6. 后端 API（Python 示例）
 
 ```bash
 cd backend
@@ -103,16 +162,62 @@ python api.py
 # http://localhost:8000/docs
 ```
 
-### 3. 前端（开发中）
+## 🧪 测试
+
+### 测试覆盖率
+
+- **总测试数**: 31 个
+- **通过率**: 100%
+- **覆盖范围**:
+  - ✅ 部署测试
+  - ✅ Pausable 功能
+  - ✅ Minting 功能
+  - ✅ 转账功能
+  - ✅ 自定义授权管理
+  - ✅ 车辆信息更新
+  - ✅ 维护记录添加
+  - ✅ 查询功能
+  - ✅ URI 功能
+
+### 运行测试
 
 ```bash
-cd frontend
+# 运行所有测试
+npx hardhat test
 
-# 安装依赖
-npm install
+# 显示详细输出
+npx hardhat test --verbose
 
-# 开发模式
-npm run dev
+# 运行特定测试文件
+npx hardhat test test/CarNFT_Fixed.test.js
+```
+
+### 测试结果示例
+
+```
+CarNFTFixed
+  部署
+    ✔ 应该设置正确的代币名称和符号
+    ✔ 部署者应该是所有者
+    ✔ 初始应该暂停铸造
+    ✔ 初始 totalCars 应该为 0
+
+  Pausable 功能
+    ✔ 所有者可以暂停和取消暂停合约
+    ✔ 非所有者不能暂停合约
+    ✔ 所有者可以暂停和取消暂停铸造
+
+  Minting 功能
+    ✔ 所有者可以 mint NFT
+    ✔ 非所有者不能 mint NFT
+    ✔ Minting 暂停时不能 mint
+    ✔ 应该设置正确的车辆信息
+    ✔ 应该设置正确的 tokenURI
+    ✔ 应该正确触发 CarMinted 事件
+
+  ... (共 31 个测试)
+
+  31 passing (1s)
 ```
 
 ## 📋 智能合约功能
@@ -169,11 +274,16 @@ purchaseData(recordId)
 ## 🔐 安全特性
 
 ### 智能合约安全
-- ✅ OpenZeppelin 库 - 经过审计的代码
-- ✅ 访问控制 - Ownable 权限管理
-- ✅ 输入验证 - VIN 长度、年份范围
-- ✅ 重入保护 - 防止重入攻击
-- ✅ 哈希验证 - 防止重复数据
+- ✅ **OpenZeppelin 5.x** - 经过审计的代码库
+- ✅ **访问控制** - Ownable + 自定义授权系统
+- ✅ **输入验证** - VIN 长度、年份范围、私钥长度验证
+- ✅ **重入保护** - OpenZeppelin `nonReentrant` 修饰符
+- ✅ **哈希验证** - 防止重复数据
+- ✅ **暂停机制** - Pausable 支持，紧急暂停合约
+- ✅ **自定义错误** - Gas 优化的错误处理
+- ✅ **命名规范** - Solhint 零警告
+- ✅ **安全扫描** - Slither 静态分析通过
+- ✅ **CI/CD 集成** - GitHub Actions 自动安全扫描
 
 ### 数据安全
 - ✅ 加密存储 - 用户数据加密上链
@@ -253,7 +363,38 @@ API_KEY=your_api_key
 
 MIT
 
+## 🤝 贡献
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'feat: Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+### 代码规范
+
+- **Solidity**: 遵循 Solhint 规范（零警告）
+- **JavaScript**: 遵循 ESLint 规范
+- **提交信息**: 遵循 Conventional Commits 规范
+  - `feat:` 新功能
+  - `fix:` 修复 bug
+  - `docs:` 文档更新
+  - `refactor:` 代码重构
+  - `test:` 测试相关
+  - `chore:` 构建/工具相关
+
+## 📞 联系方式
+
+- **开发者**: 上等兵•甘
+- **GitHub**: https://github.com/Pheglovog
+- **项目**: https://github.com/Pheglovog/carlife-eth
+
 ---
 
-**开发者**: 上等兵•甘
-**最后更新**: 2026-02-01 02:30
+**最后更新**: 2026-02-10 08:00
+**版本**: v2.0.0
+**Solidity**: ^0.8.23
+**测试覆盖**: 31/31 (100%)
+**Solhint**: 0 警告
