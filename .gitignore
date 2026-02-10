@@ -64,3 +64,4 @@ backup/
 # Security scan reports
 output/
 *.slither.json
+slither-report.json

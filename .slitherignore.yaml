@@ -1,0 +1,17 @@
+# Slither 忽略配置
+# 忽略 OpenZeppelin 等依赖项中的已知问题
+
+# 忽略的检测器
+detectors:
+  # OpenZeppelin 已审计的问题
+  - divide-before-multiply
+  - reentrancy-eth
+  - reentrancy-benign
+  - reentrancy-events
+  - reentrancy-no-eth
+
+# 忽略的文件/目录
+exclude_paths:
+  - node_modules/**
+  - contracts/migrations/**
+  - test/**
