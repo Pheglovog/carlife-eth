@@ -10,7 +10,8 @@ module.exports = {
       optimizer: {
         enabled: true,
         runs: 200
-      }
+      },
+      viaIR: true  // 启用 IR 编译器以解决 Stack too deep 问题
     }
   },
   paths: {
