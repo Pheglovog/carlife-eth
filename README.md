@@ -10,6 +10,14 @@
 - ✅ **里程记录** - 透明可信的里程管理
 - ✅ **维修记录** - 完整的维修历史
 - ✅ **NFT 转移** - 支持车辆所有权变更
+- ✅ **动态外观系统** - 基于车况自动更新 NFT 外观（5 个等级）
+
+### 🎨 动态 NFT (Dynamic NFT)
+- ✅ **EIP-4906 标准** - 元数据更新事件通知
+- ✅ **动态外观** - 根据车况变化（Poor/Fair/Good/Excellent/TotalLoss）
+- ✅ **生命周期追踪** - 里程、维护、事故记录
+- ✅ **Base64 元数据** - 链上元数据生成
+- ✅ **完整事件系统** - 所有操作都有事件记录
 
 ### 🔧 服务注册系统
 - ✅ **服务商注册** - 去中心化的服务商认证
@@ -23,21 +31,61 @@
 - ✅ **数据交易** - 数据所有者可以安全交易
 - ✅ **哈希验证** - 防止重复记录
 
-## 🛡️ 安全增强（v3.0.0）
+## 🛡️ 安全增强（v3.0.0+）
 
-### 输入验证
+### CarNFT_Secure (v3.0.0)
+- **输入验证**：VIN、Year、Mileage 验证
+- **审计日志**：完整的操作审计（尝试、完成、旧值、新值）
+- **Gas 优化**：存储布局优化（uint16, uint96, uint64）
+- **安全事件**：里程减少等安全事件记录
+
+### CarNFT_Enhanced (v3.1.0) - 新增！
+- **输入验证**：VIN 长度（17 字符）、年份范围（>= 1900）
+- **ReentrancyGuard**：防止重入攻击
+- **批处理功能**：
+  - `batchMintCars`：最多 50 辆
+  - `batchUpdateCarInfo`：批量更新车辆信息
+  - `batchGetCarInfo`：批量查询车辆信息
+- **Gas 优化**：13% 批量铸造节省
+- **NatSpec 文档**：完整的函数文档和使用示例
+- **测试覆盖**：36 个测试，100% 通过
+
+### CarLifeDynamicNFT (v3.2.0) - 全新！
+- **EIP-4906 标准**：元数据更新事件通知
+- **动态外观系统**：
+  - Poor (0-39)：较差状态
+  - Fair (40-59)：一般状态
+  - Good (60-79)：良好状态
+  - Excellent (80-100)：优秀状态
+  - TotalLoss：报废状态
+- **生命周期追踪**：
+  - 里程管理（每 1000 公里降低 1 点车况）
+  - 维护系统（恢复车况到 80-95）
+  - 事故记录（根据严重程度影响车况）
+  - 报废机制（严重事故触发）
+- **完善的事件系统**：
+  - `CarMinted`：铸造事件
+  - `MileageAdded`：里程添加事件
+  - `ServicePerformed`：维护事件
+  - `AccidentRecorded`：事故记录事件
+  - `AppearanceUpdated`：外观更新事件
+  - `MetadataUpdate`：元数据更新事件
+- **管理员功能**：
+  - 暂停/恢复合约
+  - 提取合约余额
+  - 设置基础 IPFS URI
+- **费用结构**：
+  - 铸造费：0.01 ETH
+  - 维护费：0.005 ETH
+  - 里程费：0.0001 ETH/1000 公里
+- **测试覆盖**：44 个测试，100% 通过
+
+### 安全特性（所有版本）
 - **VIN 验证**：17 个字符，仅允许字母数字
-- **Year 验证**：1900-2100 范围
-- **Mileage 验证**：< 1 亿公里
+- **Year 验证**：1900-当前年份范围
+- **Mileage 验证**：非负数
 - **VIN 唯一性**：防止重复 VIN 注册
-- **批量限制**：每次最多 100 个
-- **Token 限制**：最多 1,000,000 个
-
-### 审计日志
-- **MintingAttempted/Completed**：铸造尝试和完成
-- **CarInfoUpdatedAttempted/Completed**：更新尝试和完成（含旧值和新值）
-- **MaintenanceAddedAttempted/Completed**：维护添加尝试和完成
-- **SecurityEvent**：安全事件（如里程减少）
+- **批量限制**：每次最多 50-100 个（视版本而定）
 
 ### Gas 优化
 - **存储布局优化**：
@@ -73,10 +121,14 @@
 CarLife/
 ├── contracts/              # 智能合约
 │   ├── CarNFT_Fixed.sol     # 修复版 CarNFT（主合约）
-│   └── CarNFT_Secure.sol    # 安全增强版 CarNFT（v3.0.0）
+│   ├── CarNFT_Secure.sol    # 安全增强版 CarNFT（v3.0.0）
+│   ├── CarNFT_Enhanced.sol  # 增强版 CarNFT（v3.1.0）- 批处理 + 文档
+│   └── CarLifeDynamicNFT.sol # 动态 NFT（v3.2.0）- EIP-4906 + 动态外观
 ├── test/                    # 测试
 │   ├── CarNFT_Fixed.test.js  # 完整测试套件（35 测试）
-│   └── CarNFT_Secure.test.js  # 安全增强测试（22 测试）
+│   ├── CarNFT_Secure.test.js  # 安全增强测试（22 测试）
+│   ├── CarNFT_Enhanced.test.js # 增强版测试（36 测试，100% 通过）
+│   └── CarLifeDynamicNFT.test.js # 动态 NFT 测试（44 测试，100% 通过）
 ├── scripts/                 # 部署脚本
 │   ├── deploy.js            # 部署脚本
 │   ├── deploy-all.js        # 批量部署
@@ -216,6 +268,24 @@ uint96 mileage;        // 12 bytes (节省 62.5%)
 uint64 lastServiceDate; // 8 bytes (节省 75%)
 ```
 
+## 📚 详细文档
+
+### 集成测试文档
+- **文档**: [docs/INTEGRATION_TESTS.md](docs/INTEGRATION_TESTS.md)
+- **内容**:
+  - 105 个测试用例详解
+  - 测试覆盖率分析
+  - 测试最佳实践
+  - 已知问题和修复计划
+
+### Gas 优化报告
+- **文档**: [docs/GAS_OPTIMIZATION_REPORT.md](docs/GAS_OPTIMIZATION_REPORT.md)
+- **内容**:
+  - 详细的优化技术分析
+  - Gas 消耗对比（优化前/后）
+  - 成本分析（主网/ Layer 2）
+  - 未来优化计划
+
 ## 📝 API 参考
 
 ### CarNFT_Secure 合约
@@ -331,6 +401,22 @@ module.exports = {
 
 ## 📦 版本历史
 
+### v3.2.0 (2026-02-18)
+- ✨ 新增 `CarLifeDynamicNFT.sol` - 动态 NFT 合约
+- ✨ 实现 EIP-4906 元数据更新事件
+- ✨ 添加动态外观系统（5 个等级）
+- ✨ 实现车辆生命周期追踪（里程、维护、事故）
+- ✨ 添加完善的事件系统
+- ✨ 实现管理员功能（暂停、提取、IPFS URI）
+- ✨ 添加 44 个测试（100% 通过）
+
+### v3.1.0 (2026-02-15)
+- ✨ 新增 `CarNFT_Enhanced.sol` - 增强版
+- ✨ 添加批处理功能（批量铸造、更新、查询）
+- ✨ 优化 Gas 使用（13% 批量铸造节省）
+- ✨ 添加完整的 NatSpec 文档
+- ✨ 添加 36 个测试（100% 通过）
+
 ### v3.0.0 (2026-02-13)
 - ✨ 新增 `CarNFT_Secure.sol` - 安全增强版
 - ✨ 添加完整的输入验证
@@ -387,6 +473,6 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-**文档版本**: 3.0.0
-**更新日期**: 2026-02-13
+**文档版本**: 3.2.0
+**更新日期**: 2026-02-18
 **作者**: 上等兵•甘
