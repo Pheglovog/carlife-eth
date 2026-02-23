@@ -130,7 +130,7 @@ contract CarNFTFixed is ERC721, ERC721URIStorage, Ownable, Pausable {
         uint256 mileage,
         string memory condition,
         string memory uri
-    ) public onlyOwner whenNotPaused whenNotPausedMinting {
+    ) public onlyCustomAuthorized whenNotPaused whenNotPausedMinting {
         uint256 tokenId = _tokenCounter;
         _tokenCounter++;
 

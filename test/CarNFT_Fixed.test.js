@@ -98,7 +98,7 @@ describe("CarNFTFixed", function () {
           CONDITION,
           URI
         )
-      ).to.be.revertedWithCustomError(carNFT, "OwnableUnauthorizedAccount");
+      ).to.be.revertedWithCustomError(carNFT, "NotAuthorized");
     });
 
     it("Minting 暂停时不能 mint", async function () {
