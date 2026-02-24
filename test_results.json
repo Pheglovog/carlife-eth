@@ -1,0 +1,6 @@
+Error HH305: Unrecognized param --reporter
+
+HardhatError: HH305: Unrecognized param --reporter
+    at ArgumentsParser._parseTaskParamArguments (/root/clawd/CarLife/node_modules/hardhat/src/internal/cli/ArgumentsParser.ts:207:15)
+    at ArgumentsParser.parseTaskArguments (/root/clawd/CarLife/node_modules/hardhat/src/internal/cli/ArgumentsParser.ts:181:12)
+    at main (/root/clawd/CarLife/node_modules/hardhat/src/internal/cli/cli.ts:316:39)
