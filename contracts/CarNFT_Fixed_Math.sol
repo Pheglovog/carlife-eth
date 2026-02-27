@@ -181,7 +181,7 @@ contract CarNFTFixedMath is ERC721, ERC721URIStorage, Ownable, Pausable {
         _carInfos[tokenId].mileage = mileage;
         _carInfos[tokenId].condition = condition;
 
-        emit CarInfoUpdated(msg.sender, tokenId, oldMileage, mileage, oldCondition, condition, block.timestamp);
+        emit CarInfoUpdated(tokenId, oldMileage, mileage, oldCondition, condition, block.timestamp);
     }
 
     function addMaintenance(
@@ -206,11 +206,8 @@ contract CarNFTFixedMath is ERC721, ERC721URIStorage, Ownable, Pausable {
      * @return fee 计算得出的费用
      */
     function calculateFee(uint256 amount, uint256 feeRate) public pure returns (uint256) {
-        // 使用 CarLifeMath.percentage 进行精确计算（结果为 WAD 精度）
-        uint256 feeWad = CarLifeMath.percentage(amount, feeRate);
-        
-        // 将 WAD 转换为普通数值（向下取整）
-        uint256 fee = CarLifeMath.fromWad(feeWad);
+        // 使用 CarLifeMath.percentage 进行精确计算
+        uint256 fee = CarLifeMath.percentage(amount, feeRate);
         
         return fee;
     }
@@ -226,22 +223,33 @@ contract CarNFTFixedMath is ERC721, ERC721URIStorage, Ownable, Pausable {
         return calculateFee(amount, feeRate);
     }
 
-    // ====== 批量更新功能（Gas 优化） ======
-
     /**
-     * @notice 批量更新里程（使用 unchecked 节省 Gas）
+     * @notice 批量更新里程（Gas 优化版）
      * @param tokenIds Token ID 数组
      * @param mileages 里程数组
      */
-    function batchUpdateMileage(uint256[] calldata tokenIds, uint256[] calldata mileages) public onlyCustomAuthorized {
+    function batchUpdateMileage(
+        uint256[] calldata tokenIds,
+        uint256[] calldata mileages
+    ) public onlyCustomAuthorized {
         require(tokenIds.length == mileages.length, "Length mismatch");
 
         unchecked {
             for (uint256 i = 0; i < tokenIds.length; i++) {
-                if (_ownerOf(tokenIds[i]) != address(0)) continue;
-                uint256 oldMileage = _carInfos[tokenIds[i]].mileage;
-                _carInfos[tokenIds[i]].mileage = mileages[i];
-                emit CarInfoUpdated(msg.sender, tokenIds[i], oldMileage, mileages[i], "", block.timestamp);
+                uint256 tokenId = tokenIds[i];
+                if (_ownerOf(tokenId) != address(0)) {
+                    uint256 oldMileage = _carInfos[tokenId].mileage;
+                    _carInfos[tokenId].mileage = mileages[i];
+
+                    emit CarInfoUpdated(
+                        tokenId,
+                        oldMileage,
+                        mileages[i],
+                        _carInfos[tokenId].condition,
+                        _carInfos[tokenId].condition,
+                        block.timestamp
+                    );
+                }
             }
         }
     }
